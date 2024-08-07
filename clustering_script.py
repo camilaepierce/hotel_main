@@ -65,13 +65,13 @@ if __name__ == "__main__":
     ######################################
 
     # ### Visualize both clusterings
-    r4_info = visualize_clusters.visualize_clusters(scaled_vectors_r4, kmeans_r4, k, title=f"{name} With Signed Distance", plot_rating=False)
+    r4_info = visualize_clusters.visualize_clusters(scaled_vectors_r4, kmeans_r4, k, title=f"{name} R^4 Control", plot_rating=False)
     # Plot highway
     visualize_clusters.plot_cubic_spline_highway(hw_cubic_spline_scaled)
     plt.savefig(f"results/{name}_with_signed_distance")
     plt.show(block=False)
 
-    r3_info = visualize_clusters.visualize_clusters(scaled_vectors_r3, kmeans_r3, k, title=f"{name} Without Signed Distance", plot_rating=False)
+    r3_info = visualize_clusters.visualize_clusters(scaled_vectors_r3, kmeans_r3, k, title=f"{name} R^3 Control", plot_rating=False)
     # Plot highway
     visualize_clusters.plot_cubic_spline_highway(hw_cubic_spline_scaled)
     plt.savefig(f"results/I-{name}_Control_without_signed_distance")

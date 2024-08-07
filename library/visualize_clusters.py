@@ -137,11 +137,11 @@ def visualize_clusters(
         all_intersection_combos(convex_hull_borders)
 
     # Plot after removing next five lines ***
-    xlimit = plt.xlim()
-    ylimit = plt.ylim()
+    # xlimit = plt.xlim()
+    # ylimit = plt.ylim()
 
-    plt.xlim(xlimit)
-    plt.ylim(ylimit)
+    # plt.xlim(xlimit)
+    # plt.ylim(ylimit)
 
     if (
         plot_rating
@@ -152,9 +152,9 @@ def visualize_clusters(
             cmap="viridis",
             c=data_vectors[:, cmap_index],
         )
-        plt.colorbar(label="hotel rating")
+        # plt.colorbar(label="hotel rating")
 
-    plt.title(label=title)
+    if not plot_matrix: plt.title(label=title)
     return cluster_info
 
 
@@ -358,9 +358,13 @@ def increment_beta_values(
     k,
     n,
     method="scaling",
+    final_beta_list = ((.5, 1),
+                       (1.5, 2),
+                       (3, 5)),
     start=0.1,
     stop=5,
     increment=0.05,
+    overlay_rating=False,
 ):
     """
     Runs k-means of every beta modification from start to stop.
@@ -404,6 +408,7 @@ def increment_beta_values(
     #### plot data evaluation with beta values
     plt.figure()
     plt.plot(all_betas, beta_yields, "o-r")
+    plt.title(f"{name} adjusted_rand_score for {method}")
     plt.show(block=False)
 
     # collect floats for which to rerun clustering
@@ -414,12 +419,9 @@ def increment_beta_values(
     #     ).split()
     # ]
 
-    final_beta_list = [1.0, 0.5, 1.5, 2.0, 3.0, 5.0]
-    final_beta_list = [[1.0, 0.5],
-                       [1.5, 2.0],
-                       [3.0, 5.0]]
 
-    fig, axes = plt.subplots(3, 2)
+    fig, axes = plt.subplots(3, 2, layout="constrained")
+
 
     for r, row in enumerate(final_beta_list):
         for c, final_beta in enumerate(row):
@@ -428,16 +430,20 @@ def increment_beta_values(
             kmeans = KMeans(n_clusters=k, init="k-means++")
             estimator = kmeans.fit(modified_data)
 
-            visualize_clusters(modified_data, kmeans, k, plot_rating=True,
+            visualize_clusters(modified_data, kmeans, k, plot_rating=overlay_rating,
                 title=f"Beta {method} {final_beta} of {name} with {k} clusters within {n} miles",
                 plot_matrix=True, sub_axes=axes, subplot_ix=(r, c)
             )
+            axes[r, c].set_title(f"Beta: {final_beta}")
             # plot_cubic_spline_highway(highway_cubic_spline)
             hw_x = np.linspace(highway_cubic_spline.x[0], highway_cubic_spline.x[-1], num=100)
             plotting_fxn = highway_cubic_spline(hw_x)
             axes[r, c].plot(hw_x, plotting_fxn)
+    if overlay_rating: plt.colorbar(label="hotel rating")
+    fig.suptitle(f"{name} clustering with {method} betas")
+    fig.set_size_inches(8, 6)
     plt.savefig(
-                f"results/{name}_{method}_{final_beta}_with.png"
+                f"results/{name}_{method}_with.png"
             )
     plt.show(block=False)
 
