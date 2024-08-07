@@ -22,9 +22,8 @@ if __name__ == "__main__":
     k = 4
     ### Miles from highway to search for hotels
     n=3
-
     ### Beta method ("scaling", "adding", "bool_value")
-    init_method = "adding"
+    beta_method = "adding"
 
     ######################################
     ### Retrieving Data ###
@@ -99,8 +98,8 @@ if __name__ == "__main__":
     ##############################################################
     ### Manually change Beta value ( * signed distance)
 
-    for current_method in ["scaling", "adding", "bool_value"]:
-        visualize_clusters.increment_beta_values(scaled_vectors_r4, hw_cubic_spline_scaled, name, k, n, method=current_method)
+    for beta_method in ["scaling", "adding", "bool_value"]:
+        visualize_clusters.increment_beta_values(scaled_vectors_r4, hw_cubic_spline_scaled, name, k, n, method=beta_method)
 
     input("Press enter to end program.")
 
