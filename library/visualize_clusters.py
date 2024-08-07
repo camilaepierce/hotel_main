@@ -39,6 +39,9 @@ def visualize_clusters(
     plot_rating=False,
     cmap_index=2,
     title="Untitled",
+    plot_matrix = False,
+    sub_axes = None,
+    subplot_ix = (0, 0)
 ):
     """
     Plots data vectors into assigned clusters from running scipy kmeans.
@@ -88,8 +91,7 @@ def visualize_clusters(
 
     convex_hull_borders = []
 
-    fig, ax = plt.subplots()
-
+    if plot_matrix is False: fig = plt.figure()
     ### Geographic space
     for cluster in cluster_members:
         # Collects x and y of data points in each cluster to scatter plot correctly
@@ -102,7 +104,8 @@ def visualize_clusters(
                 np.array([data_vectors[member, 0], data_vectors[member, 1]])
             )
             full_member.append(data_vectors[member])
-        plt.scatter(temp_x, temp_y, c=COLORS[cluster])
+        if not plot_matrix: plt.scatter(temp_x, temp_y, c=COLORS[cluster])
+        else: sub_axes[subplot_ix[0], subplot_ix[1]].scatter(temp_x, temp_y, c=COLORS[cluster])
         # Creates convex hull for each cluster, saves vertices of each hull to convex_hull_borders
         # *Clusters of less than three data points cannot create a viable convex hull,
         # would throw error in ConvexHull module
@@ -112,30 +115,27 @@ def visualize_clusters(
             cluster_info["clusters"][cluster]["convex_hull"] = hull
             cluster_info["clusters"][cluster]["area"] = hull.area
             # plots convex hull lines for this cluster
-            for simplex in hull.simplices:
-                plt.plot(
-                    ch_format[simplex, 0], ch_format[simplex, 1], c=COLORS[cluster]
-                )
-            plt.scatter(center_locations[:, 0], center_locations[:, 1], c="red")
+            if not plot_matrix:
+                for simplex in hull.simplices:
+                    plt.plot(
+                        ch_format[simplex, 0], ch_format[simplex, 1], c=COLORS[cluster]
+                    )
+                plt.scatter(center_locations[:, 0], center_locations[:, 1], c="red")
+            else:
+                for simplex in hull.simplices:
+                    sub_axes[subplot_ix[0], subplot_ix[1]].plot(
+                        ch_format[simplex, 0], ch_format[simplex, 1], c=COLORS[cluster]
+                    )
+                sub_axes[subplot_ix[0], subplot_ix[1]].scatter(center_locations[:, 0],
+                                                             center_locations[:, 1], c="red")
+
             convex_hull_borders.append([ch_format[index] for index in hull.vertices])
         else:
             cluster_info["clusters"][cluster]["area"] = 0
         cluster_info["clusters"][cluster]["members"] = np.asarray(full_member)
         cluster_info["clusters"][cluster]
-        # Adjust text location to make visible ***
-        plt.text(
-            1.32,
-            0.95 - cluster * 0.7,
-            f"""Label: {cluster_info["clusters"][cluster]["label"]} |
-                 Num Members: {len(cluster_info["clusters"][cluster]["members"])}\n
-                 Area: {cluster_info["clusters"][cluster]["area"]:.4f}\n
-                 Avg. Rating: {cluster_info["clusters"][cluster]["cluster_center"][2]:.2f}""",
-            c=COLORS[cluster],
-        )
         all_intersection_combos(convex_hull_borders)
 
-    plt.subplots_adjust(right=0.65)
-    fig.set_figwidth(8)
     # Plot after removing next five lines ***
     xlimit = plt.xlim()
     ylimit = plt.ylim()
@@ -389,7 +389,7 @@ def increment_beta_values(
         (0 if data_vectors[i, 3] > 0 else 1) for i in range(len(data_vectors))
     ]
 
-    print("Beta\t Inertia\t Overlap Area\t Combined")
+    # print("Beta\t Inertia\t Overlap Area\t Combined")
     while beta <= stop:
         ###modify initial data with beta value
         modified_data = modify_data(data_vectors, beta, mthd=method)
@@ -407,28 +407,39 @@ def increment_beta_values(
     plt.show(block=False)
 
     # collect floats for which to rerun clustering
-    final_beta_list = [
-        float(beta)
-        for beta in (
-            input("Optimal Beta value (floats separated by a space or single float): ")
-        ).split()
-    ]
-    for final_beta in final_beta_list:
-        modified_data = modify_data(data_vectors, final_beta, method)
-        ###run kmeans on modified data
-        kmeans = KMeans(n_clusters=k, init="k-means++")
-        estimator = kmeans.fit(modified_data)
+    # final_beta_list = [
+    #     float(beta)
+    #     for beta in (
+    #         input("Optimal Beta value (floats separated by a space or single float): ")
+    #     ).split()
+    # ]
 
-        visualize_clusters(modified_data, kmeans, k, plot_rating=True,
-            title=f"Beta {final_beta} of {name} with {k} clusters within {n} miles",
-        )
-        plot_cubic_spline_highway(highway_cubic_spline)
+    final_beta_list = [1.0, 0.5, 1.5, 2.0, 3.0, 5.0]
+    final_beta_list = [[1.0, 0.5],
+                       [1.5, 2.0],
+                       [3.0, 5.0]]
 
-        plt.savefig(
-            f"hotel_testing_betas_{method}/I-{name} \
-                Hotel Clustering with Signed Distance Beta_{final_beta}.png"
-        )###IF ERROR CHECK HERE FIRST
-        plt.show(block=False)
+    fig, axes = plt.subplots(3, 2)
+
+    for r, row in enumerate(final_beta_list):
+        for c, final_beta in enumerate(row):
+            modified_data = modify_data(data_vectors, final_beta, method)
+            ###run kmeans on modified data
+            kmeans = KMeans(n_clusters=k, init="k-means++")
+            estimator = kmeans.fit(modified_data)
+
+            visualize_clusters(modified_data, kmeans, k, plot_rating=True,
+                title=f"Beta {method} {final_beta} of {name} with {k} clusters within {n} miles",
+                plot_matrix=True, sub_axes=axes, subplot_ix=(r, c)
+            )
+            # plot_cubic_spline_highway(highway_cubic_spline)
+            hw_x = np.linspace(highway_cubic_spline.x[0], highway_cubic_spline.x[-1], num=100)
+            plotting_fxn = highway_cubic_spline(hw_x)
+            axes[r, c].plot(hw_x, plotting_fxn)
+    plt.savefig(
+                f"results/{name}_{method}_{final_beta}_with.png"
+            )
+    plt.show(block=False)
 
 
 #################################################################

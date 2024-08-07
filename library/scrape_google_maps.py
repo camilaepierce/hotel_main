@@ -12,12 +12,13 @@ run 'pip install -U googlemaps' prior to running associated scripts
 ***API Key*** First created July 24th, 2024, will run out October 22, 2024
 AIzaSyCCC-jl0fP7Hyp4jZCdRtcCzWHHq7cDT7k
 To create your own key: Must enable Google Maps API in google developer console.
+Need: Places, Roads, Distance Matrix, Service Usage
 
 Reformatted using black.
 """
 
-import googlemaps
 import numpy as np
+import googlemaps
 
 # possibly filter by number of ratings? holdback data
 # with and without signed distance clustering
@@ -34,7 +35,9 @@ def collect_hotels_along_highway(
     miles=3,
 ):
     """Reads txt file that contains hotel data.
-    Assumes in columns of Name, X location, Y location, and Rating."""
+    Assumes in columns of Name, X location, Y location, and Rating.
+
+    Saves information to """
     find_road = gmap.snap_to_roads(path, interpolate=True)
     data = set()
 
@@ -55,9 +58,7 @@ def collect_hotels_along_highway(
                         int(place["user_ratings_total"]),
                     )
                 )
-            else:
-                print(f"Excluding {place["name"]} from the results.")
-                # pass
+
 
     with open(filename, "w", encoding="utf-8") as file:
         file.write("Abbrv.\tLat\tLong\tRating\tNumber_Of_Reviews\n")
@@ -68,7 +69,7 @@ def collect_hotels_along_highway(
                     \t{hotel[1]}\t{hotel[2]}\t{hotel[3]}\t{hotel[4]}\n"
                 )
             else:
-                file.write(f"{hotel[0].replace(" ", "_")}\t{hotel[1]}\t{hotel[2]}\t{hotel[3]}\
+                file.write(f"{hotel[0].replace(' ', '_')}\t{hotel[1]}\t{hotel[2]}\t{hotel[3]}\
                         \t{hotel[4]}\n")
     if return_value:
         np.set_printoptions(suppress=True)
@@ -106,7 +107,7 @@ def lat_long_snapped_path(path):
         * lat (list) : just the latitude elements of each point
         * long (list) : just the longitude elements of each point
     """
-    snapped_points = gmap.snap_to_roads(path, interpolate=True)
+    snapped_points = gmap.snap_to_roads(path)
     out, lat, long = [], [], []
     for hw_point in snapped_points:
         out.append(

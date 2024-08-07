@@ -6,9 +6,12 @@ Set of functions to process and modify data related to highway distance.
 
 Reformatted using black.
 """
+import math
 import numpy as np
 from scipy.optimize import minimize
-import math
+from scipy.interpolate import CubicSpline
+from sklearn.preprocessing import StandardScaler
+
 
 def reformat_data(data, highway_spline, decimals = 4):
     """
@@ -90,3 +93,26 @@ def retrieve_hotel_data(file_name):
     for line in file.readlines():
         data.append(np.array([float(d) for d in line.split()[1:4]]))
     return np.array(data)
+
+
+def create_cubic_splines(snapped_path):
+    """
+    Parameters:
+    * snapped_path (list of points) : 2d (lat, long) points
+
+    Returns:
+        (unscaled, scaled) cubic splines
+    """
+    lat, long = [], []
+    lat_2d, long_2d = [], []
+    for point in snapped_path:
+        lat.append(point[0])
+        long.append(point[1])
+        lat_2d.append([point[0]])
+        long_2d.append([point[1]])
+
+    hw_longs_scaled = StandardScaler().fit(long_2d).transform(long_2d)
+    hw_lats_scaled = StandardScaler().fit(lat_2d).transform(lat_2d)
+    cubic_spline = CubicSpline(long, lat)
+    cubic_spline_scaled = CubicSpline(hw_longs_scaled.flatten(), hw_lats_scaled.flatten())
+    return cubic_spline, cubic_spline_scaled
