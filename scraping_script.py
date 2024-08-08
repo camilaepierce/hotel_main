@@ -50,7 +50,7 @@ def save_matrix_to_file(list_of_lists, new_path):
 
 if __name__ == "__main__":
     import os
-    sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+    # sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
     if len(sys.argv) >= 3:
         file_path = sys.argv[1]

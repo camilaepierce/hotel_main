@@ -1,12 +1,23 @@
+"""
+clustering_script.py
+Created by Camila Pierce
+Last Updated 8.7.2024
+
+Run
+
+
+Example command line test
+"""
+
 import sys
 import numpy as np
-import scraping_script
-from library import cubic_spline, scrape_google_maps, visualize_clusters
 from scipy.interpolate import CubicSpline
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
+import scraping_script
+from library import cubic_spline, scrape_google_maps, visualize_clusters
 
 if __name__ == "__main__":
     import os
@@ -16,6 +27,11 @@ if __name__ == "__main__":
         snapped_path = sys.argv[1]
         hotels_path = sys.argv[2]
         name = sys.argv[3]
+    elif len(sys.argv) == 1:
+        ### FILE PATHS HERE
+        snapped_path = "/snapped_highways/test_input.txt"
+        hotels_path = "/hotel_data/test_input_hotels.txt"
+        name = "test_input"
 
     ### Tunable Parameters
     ### Number of clusters
@@ -24,6 +40,11 @@ if __name__ == "__main__":
     n=3
     ### Beta method ("scaling", "adding", "bool_value")
     beta_method = "adding"
+
+    ### Beta matrix
+    beta_array = ((1.0, 0.5),
+                   (1.5, 2.0),
+                   (3.0, 5.0))
 
     ######################################
     ### Retrieving Data ###
@@ -98,8 +119,8 @@ if __name__ == "__main__":
     ##############################################################
     ### Manually change Beta value ( * signed distance)
 
-    for beta_method in ["scaling", "adding", "bool_value"]:
-        visualize_clusters.increment_beta_values(scaled_vectors_r4, hw_cubic_spline_scaled, name, k, n, method=beta_method)
+    visualize_clusters.increment_beta_values(scaled_vectors_r4, hw_cubic_spline_scaled, name,
+                                                 k, n, method=beta_method, final_beta_list=beta_array)
 
     input("Press enter to end program.")
 
