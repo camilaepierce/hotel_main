@@ -49,5 +49,6 @@ Steps to create clustering with highway data:
           *Plotting controls for with signed distance and without signed distance (no beta modification)
           *Incrementing beta values with their adjusted_rand_score
           *Plotting each beta in beta_array for comparison
+      Created plots will be created under the results folder unless otherwise specified.
 
   Files such as test_input, I-85, I-40, and I-440 are included in the project as examples.
