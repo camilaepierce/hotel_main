@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 from shapely import intersection, Polygon, get_coordinates
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, kmeans_plusplus
 from sklearn.metrics import adjusted_rand_score
 
 
@@ -342,7 +342,7 @@ def modify_data(data, b, mthd):
         return np.array(
             [
                 np.array(
-                    (data[i, 0], data[i, 1], data[i, 2], (0 if data[i, 3] > 0 else b))
+                    (data[i, 0], data[i, 1], data[i, 2], (0 if data[i, 3] < 0 else b))
                 )
                 for i in range(len(data))
             ]
@@ -409,6 +409,7 @@ def increment_beta_values(
     plt.figure()
     plt.plot(all_betas, beta_yields, "o-r")
     plt.title(f"{name} adjusted_rand_score for {method}")
+    plt.savefig(f"results/{method}_beta_increment_scores_{name}")
     plt.show(block=False)
 
     # collect floats for which to rerun clustering
@@ -446,6 +447,43 @@ def increment_beta_values(
                 f"results/{name}_{method}_with.png"
             )
     plt.show(block=False)
+
+def temp_variability_demo(
+    data_vectors,
+    highway_cubic_spline,
+    final_beta_list = ((1, 1),
+                       (1, 1),
+                       (1, 1)),
+    title="untitled",
+    special_init = "k-means++",
+    supertitle = f"Repeated Control, R^3 Data, Vanilla K-Means++"
+):
+
+    fig, axes = plt.subplots(3, 2, layout="constrained")
+
+
+    for r, row in enumerate(final_beta_list):
+        for c, final_beta in enumerate(row):
+            # Produces initialization for "vanilla" k-means++ clustering
+            # special_init, indices = kmeans_plusplus(data_vectors, 4, n_local_trials=1)
+
+            kmeans = KMeans(n_clusters=4, init=special_init)
+            estimator = kmeans.fit(data_vectors)
+
+            visualize_clusters(data_vectors, kmeans, 4, plot_rating=False,
+                plot_matrix=True, sub_axes=axes, subplot_ix=(r, c)
+            )
+            axes[r, c].set_title(f"Beta: {final_beta}")
+            # plot_cubic_spline_highway(highway_cubic_spline)
+            hw_x = np.linspace(highway_cubic_spline.x[0], highway_cubic_spline.x[-1], num=100)
+            plotting_fxn = highway_cubic_spline(hw_x)
+            axes[r, c].plot(hw_x, plotting_fxn)
+    fig.suptitle(supertitle)
+    fig.set_size_inches(8, 6)
+    plt.savefig(
+                f"results/{title}.png"
+            )
+    plt.show(block=True)
 
 
 #################################################################

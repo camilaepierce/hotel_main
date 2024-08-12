@@ -1,0 +1,12 @@
+Abbrv.	Lat	Long	Rating	Number_Of_Reviews
+Hampton_Inn_High_Point	-79.9555439	35.905354	4.3                        	554
+Days_Inn_by_Wyndham_High_Point/Archdale	-79.9528014	35.9020933	3.1                        	646
+Comfort_Inn_&_Suites_High_Point_-_Archdale	-79.95915389999999	35.9045255	3.8                        	137
+Microtel_Inn_&_Suites_by_Wyndham_Thomasville/High_Point/Lexi	-80.10432430000002	35.8563999	3.5                        	445
+Quality_Inn_High_Point_-_Archdale	-79.957149	35.903901	3.8                        	396
+High_Point_Inn_&_Suites	-79.9392506	35.9223548	2.7                        	17
+Comfort_Inn_Thomasville_I-85	-80.10532789999999	35.8565121	3.9                        	386
+Holiday_Inn_Express_&_Suites_High_Point_South,_an_IHG_Hotel	-79.954909	35.905142	4.4                        	429
+Quality_Inn_&_Suites	-80.069966	35.862957	3.4                        	314
+Stay_Lodge_of_Thomasville	-80.0710014	35.8588407	3.4                        	172
+Fairfield_Inn_&_Suites_High_Point_Archdale	-79.95791229999999	35.9043077	4.2                        	416
