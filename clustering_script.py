@@ -8,7 +8,7 @@ Run either in the command line or by clicking run on file.
 If in command line, include the following:
 python clustering_script.py [snapped path] [hotel data] [name]
 **Example command line test:
-python clustering_script.py .\snapped_highways\test_input_path.txt .\hotel_data\test_input_hotels.txt test_input
+python clustering_script.py ./snapped_highways/test_input_path.txt ./hotel_data/test_input_hotels.txt test_input
 
 If hitting run on file, ensure the correct paths for lines 41-43.
 
@@ -21,7 +21,7 @@ from scipy.interpolate import CubicSpline
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
-from library.centroid_init import create_init_vectors
+from library.centroid_init import create_init_vectors, arc_length_div_init
 
 import scraping_script
 from library import cubic_spline, scrape_google_maps, visualize_clusters
@@ -125,7 +125,8 @@ if __name__ == "__main__":
     ###To-Do: update title info, include legend with hull areas, average ratings
     ### change beta values
 
-
+    ##############################################################
+    ### Running comparison clustering ###
     ##############################################################
     #check variability for greedy, R^4,
     #vanilla initialization
@@ -135,6 +136,11 @@ if __name__ == "__main__":
     # init_vectors = create_init_vectors(scaled_vectors_r4, (0, 1, 2, 3), k)
     # visualize_clusters.temp_variability_demo(scaled_vectors_r4, hw_cubic_spline_scaled, title="repeated_control_r4_greedy_4dim_init",
     #                                          special_init=init_vectors, supertitle=f"Repeated Control, R^4 Data, Lat Long Rating Sign Initialization")
+
+    #Using arc length initialization
+    # init_vectors = arc_length_div_init(hw_cubic_spline_scaled, k, scaled_vectors_r4)
+    # visualize_clusters.temp_variability_demo(scaled_vectors_r4, hw_cubic_spline_scaled, k=k, title="repeated_control_r4_arc_length_init",
+    #                                          special_init=init_vectors, supertitle=f"Repeated Control, R^4 Data, Arc Length Initialization")
 
     # visualize_clusters.temp_variability_demo(scaled_vectors_r4, hw_cubic_spline_scaled, title="repeated_control_r4_greedy")
     # visualize_clusters.temp_variability_demo(scaled_vectors_r3, hw_cubic_spline_scaled, title="repeated_control_r3_greedy")

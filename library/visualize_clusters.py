@@ -451,6 +451,7 @@ def increment_beta_values(
 def temp_variability_demo(
     data_vectors,
     highway_cubic_spline,
+    k=4,
     final_beta_list = ((1, 1),
                        (1, 1),
                        (1, 1)),
@@ -470,7 +471,7 @@ def temp_variability_demo(
             kmeans = KMeans(n_clusters=4, init=special_init)
             estimator = kmeans.fit(data_vectors)
 
-            visualize_clusters(data_vectors, kmeans, 4, plot_rating=False,
+            visualize_clusters(data_vectors, kmeans, k, plot_rating=False,
                 plot_matrix=True, sub_axes=axes, subplot_ix=(r, c)
             )
             axes[r, c].set_title(f"Beta: {final_beta}")
