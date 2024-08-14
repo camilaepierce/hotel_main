@@ -1,3 +1,10 @@
+"""
+centroid_init.py
+Created by Camila Pierce
+Last Updated 8.14.2024
+
+Functions for determining specific initializations.
+"""
 import numpy as np
 import math
 from scipy.integrate import quad
@@ -5,7 +12,6 @@ import numpy.polynomial.polynomial as np_poly
 from scipy.optimize import minimize
 
 def find_centroid(data, dimension_indexes = (0, 1)):
-
     centroid = []
     for dimension in dimension_indexes:
         centroid.append(np.mean(data[:, dimension]))
@@ -16,6 +22,9 @@ def mod_data(data, dimension_indexes=(0, 1)):
     return data[:, dimension_indexes]
 
 def find_closest_point(modded_data, centroid):
+    """
+    Finds closest point to centroid.
+    """
     min_distance = float("inf")
     min_index = -1
 
@@ -38,6 +47,9 @@ def find_closest_point(modded_data, centroid):
 #     return  max_index
 
 def find_furthest_point(modded_data, c_list):
+    """
+    Finds furthest point from every point in c_list. See K-Means++ details for specifics
+    """
     max_distance = float("-inf")
     max_index = -1
 
@@ -50,6 +62,11 @@ def find_furthest_point(modded_data, c_list):
 
 
 def create_init_vectors(r_x_data, dims, k):
+    """
+    Create init vectors based on mass centers - can select choice dimensions with dims
+
+    Returns array size (k, n_features)
+    """
     center = find_centroid(r_x_data, dims)
     r_4_modded = mod_data(r_x_data, dims)
     first_index = find_closest_point(r_4_modded, center)
@@ -66,15 +83,14 @@ def reshape_cubic_coeff(array):
 
 
 def arc_length_div_init(cubic_spline, k, data):
+    """
+    Create initialization vectors based on equal highway segments from arc length.
+
+    Returns array size (k, n_features)
+    """
     total_length=0
     #reformat coeff
     cubic_coeff = reshape_cubic_coeff(cubic_spline.c)
-
-    print(len(cubic_spline.x))
-    print(len(cubic_spline.c))
-    print(cubic_spline.x)
-    print(cubic_spline.c)
-    print(cubic_coeff)
     for i in range(len(cubic_spline.x)-1):
         a = cubic_spline.x[i]
         b = cubic_spline.x[i+1]
@@ -118,7 +134,8 @@ def h_of_x(cubic_coeff):
     return special_fxn
 
 def arc_length_goal_fxn(cubic_spline, coeffs, goal_arc_length):
-    #create cubic spline specific info?
+    #create cubic spline
+    #(h(x)-s)^2
     def special_fxn(x):
         #pre-integrated
         #go through segements until x < start of next segement.
