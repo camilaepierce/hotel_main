@@ -158,3 +158,13 @@ def arc_length_goal_fxn(cubic_spline, coeffs, goal_arc_length):
         return (length + quad(h_of_x(coeff), last_bp, x)[0] - goal_arc_length)**2
 
     return special_fxn
+
+
+def arc_length_div_init_2(cubic_spline, k, data):
+    """
+    Similar to original arc_length_div_init but ignores splits into k+1 sections and ignores end points.
+    """
+
+    init_vectors = arc_length_div_init(cubic_spline, k+2, data)
+
+    return init_vectors[1:-1]
